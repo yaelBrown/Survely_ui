@@ -1,0 +1,91 @@
+.chatbubble-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 1.5em 0em;
+}
+
+.chatbubble-icon {
+  background-color: #3366FF;
+  color: white;
+  border-radius: 50%;
+  width: 23px;
+  text-align: center;
+  height: 23px;
+  display: block;
+  visibility: hidden;
+}
+
+.chatbubble-text {
+  background-color: #F0F0F0;
+  font-size: 12px;
+  margin: auto;
+  padding: .75em;
+}
+
+.chatbubble-visibility-visible {
+  visibility: visible;
+}
+
+.chatbubble-visibility-hidden {
+  visibility: hidden;
+}
+
+#survey-chat-wrapper {
+  height: 100%;
+  background: white;
+  border-radius: 3px;
+  min-height: 563px;
+  padding: .5em;
+  margin-bottom: 5px;
+}
+
+#survey-chat-input-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#survey-chat-input-row-input {
+  width: 350px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#survey-divider {
+  height: 0px;
+  width: calc(100% - 4px);
+  border: 1px solid white;
+  margin: auto;
+}
+
+#survey-btn-row {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  padding-top: 10px;
+  width: calc(100% - 5px);
+  margin: auto;
+}
+
+#survey-btn-row Textarea {
+  display: inherit;
+  flex-direction: row;
+  width: calc(100% - 62px);
+  margin-right: 10px;
+}
+
+#survey-btn-row Button {
+  align-self: center;
+}

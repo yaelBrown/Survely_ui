@@ -1,0 +1,27 @@
+#surveyChat-wrapper {
+  width: calc(100% - 5px);
+  background-color: white;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.surveyChat-message {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 0px !important; 
+}
+
+.surveyChat-message-name,
+.surveyChat-message-msg {
+  display: flex;
+  align-items: flex-start;
+}
+
+.surveyChat-message-name {
+  width: 70px;
+}
+
+.surveyChat-message-msg {
+
+}
