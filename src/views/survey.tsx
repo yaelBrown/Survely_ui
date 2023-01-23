@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import "../assets/css/survey.css";
 import { ChangeEventHandler, useEffect, useState } from "react";
 import SurveyLayout from "../components/layout/survey/surveyLayout";
+import Axios from 'axios';
+import { API_URL } from "../utils/constants";
 
 interface ISurveyInitialState {
   chat?: IChatMessage[];
@@ -98,7 +100,24 @@ export default function Survey() {
     });
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {   
+    Axios.get(API_URL + `survey/${param}`)
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+  }, []);
+
+
+
+
+
+
+
+
+
 
   return (
     <SurveyLayout>
