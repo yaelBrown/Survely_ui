@@ -1,18 +1,19 @@
 import { Button, TextInput } from "evergreen-ui";
 import { useParams } from "react-router-dom";
-import "../assets/css/survey.css";
 import { ChangeEventHandler, useEffect, useState } from "react";
 import SurveyLayout from "../components/layout/survey/surveyLayout";
 import Axios from 'axios';
 import { API_URL } from "../utils/constants";
+import Loading from "../components/loading";
+import "../assets/css/survey.css";
 
 interface ISurveyInitialState {
   chat?: IChatMessage[];
   questions: string[];
-  answers: string[];
-  questioned: number[];
   text: string;
-  cur: number;
+  status: SurveyStatus;
+  username: string;
+  surveyee: string;
 }
 
 interface IChatMessage {
@@ -26,9 +27,22 @@ interface IChatBubble {
   message: string;
 }
 
+interface ISurveyChatScreenProps {
+  handleTextChange: Function;
+  handleTextSubmit: Function;
+  state: any;     // TODO: Change this to react state datatype
+}
+
 enum Author {
   USER,
   SYS
+}
+
+enum SurveyStatus {
+  LOADING,
+  SURVEY_NO_EXIST,
+  SURVEY_IN_PROG,
+  SURVEY_COMPLETE,
 }
 
 const DefaultSystemIcon = () => (<span id="survey-default-avatar">S</span>)
@@ -54,48 +68,89 @@ const ChatBubble = (props: IChatBubble) => {
   )
 }
 
+const SurveyChatScreen = (props: ISurveyChatScreenProps) => {
+  return (
+    <>
+    <section id="survey-chat-wrapper">
+      <ChatBubble author={Author.SYS} index={0} message="Test message One"/>
+      <ChatBubble author={Author.USER} index={1} message="Test message two"/>
+      <ChatBubble author={Author.SYS} index={2} message="Test message three"/>
+      <ChatBubble author={Author.USER} index={3} message="Test message four"/>
+      <ChatBubble author={Author.SYS} index={4} message="Test message five"/>
+      <ChatBubble author={Author.USER} index={5} message="Test message six"/>
+      <ChatBubble author={Author.SYS} index={6} message="Test message seven"/>
+      <ChatBubble author={Author.SYS} index={7} message="Test message One"/>
+      <ChatBubble author={Author.USER} index={8} message="Test message two"/>
+      <ChatBubble author={Author.SYS} index={9} message="Test message three"/>
+      <ChatBubble author={Author.USER} index={10} message="Test message four"/>
+      <ChatBubble author={Author.SYS} index={11} message="Test message five"/>
+      <ChatBubble author={Author.USER} index={12} message="Test message six"/>
+      <ChatBubble author={Author.SYS} index={13} message="Test message seven"/>
+    </section>
+    <section id="survey-chat-input-row">
+      <TextInput
+        id="survey-chat-input-row-input"
+        value={props.state.text}
+        onChange={(event: any) => props.handleTextChange(event)}
+        placeholder="Enter your response here."
+      />
+      <Button
+        appearance="primary"
+        onClick={() => props.handleTextSubmit()}
+      >
+        Send
+      </Button>
+    </section>
+    </>
+  )
+}
+
+const SurveyComplete = () => {
+  return (
+    <section id="survey-chat-wrapper">
+      <h4>Survey Complete Screen</h4>
+    </section>
+  )
+}
+
+const SurveyNoExist = () => {
+  return (
+    <section id="survey-chat-wrapper">
+      <h4>Survey Does Not Exist</h4>
+    </section>
+  )
+}
+
 export default function Survey() {
   const { param } = useParams();
-
+  
   const USER: string = "user";
   const SYS: string = "Demo";
-
+  
   const initialState: ISurveyInitialState = {
     chat: [],
-    questions: [
-      "Whats your favorite color?",
-      "Whats your favorite 2 digit number?",
-      "Whos your favorite actor?",
-    ],
-    answers: [],
-    questioned: [],
+    questions: [],
     text: "",
-    cur: 0,
+    status: SurveyStatus.LOADING,
+    username: USER,
+    surveyee: SYS
   };
 
   const [state, setState] = useState(initialState);
 
-  const handleTextChange: ChangeEventHandler<HTMLInputElement> = (e) =>
-    setState({ ...state, text: e.target.value });
+  const handleTextChange: ChangeEventHandler<HTMLInputElement> = (e) => setState({ ...state, text: e.target.value });
   const handleTextSubmit = () => {
     const newChat: IChatMessage = {
       from: USER,
       msg: state.text,
     };
 
-    const newCur: number = state.cur++;
-
     const newChatLog: IChatMessage[] = state.chat || [];
     newChatLog.push(newChat);
-
-    const newAnswers: string[] = state.answers;
-    newAnswers.push(state.text);
 
     setState({
       ...state,
       chat: newChatLog,
-      answers: newAnswers,
-      cur: newCur,
       text: "",
     });
   };
@@ -110,57 +165,23 @@ export default function Survey() {
       })
   }, []);
 
-
-
-
-
-
-
-
-
+  const renderView = () => {
+    switch(state.status) {
+      case SurveyStatus.SURVEY_COMPLETE:
+        return <SurveyComplete/>
+      case SurveyStatus.SURVEY_IN_PROG:
+        return <SurveyChatScreen state handleTextChange={handleTextChange} handleTextSubmit={handleTextSubmit} />
+      case SurveyStatus.SURVEY_NO_EXIST:
+        return <SurveyNoExist/>
+      case SurveyStatus.LOADING:
+      default:
+        return <Loading/>
+    }
+  }
 
   return (
     <SurveyLayout>
-      <section id="survey-chat-wrapper">
-        <ChatBubble author={Author.SYS} index={0} message="Test message One"/>
-        <ChatBubble author={Author.USER} index={1} message="Test message two"/>
-        <ChatBubble author={Author.SYS} index={2} message="Test message three"/>
-        <ChatBubble author={Author.USER} index={3} message="Test message four"/>
-        <ChatBubble author={Author.SYS} index={4} message="Test message five"/>
-        <ChatBubble author={Author.USER} index={5} message="Test message six"/>
-        <ChatBubble author={Author.SYS} index={6} message="Test message seven"/>
-      </section>
-      <section id="survey-chat-input-row">
-        <TextInput
-          id="survey-chat-input-row-input"
-          value={state.text}
-          onChange={(event: any) => handleTextChange(event)}
-          placeholder="Enter your response here."
-        />
-        <Button
-          appearance="primary"
-          onClick={() => handleTextSubmit()}
-        >
-          Send
-        </Button>      
-      </section>
+      { renderView() }
     </SurveyLayout>
   );
 }
-// <div id="survey-wrapper">
-//   <h2>Survey Screen: {param}</h2>
-//   <SurveyChat chat={state.chat || []}/>
-//   <div id="survey-divider"/>
-//   <div id="survey-btn-row">
-//     <Textarea
-//       value={state.text}
-//       onChange={(event: any) => handleTextChange(event)}
-//     />
-//     <Button
-//       appearance="primary"
-//       onClick={() => handleTextSubmit()}
-//     >
-//       Send
-//     </Button>
-//   </div>
-// </div>

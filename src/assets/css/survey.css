@@ -32,12 +32,13 @@
 }
 
 #survey-chat-wrapper {
-  height: 100%;
+  height: 605px;
   background: white;
   border-radius: 3px;
   min-height: 563px;
   padding: .5em;
   margin-bottom: 5px;
+  overflow: auto;
 }
 
 #survey-chat-input-row {
