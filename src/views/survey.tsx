@@ -6,6 +6,7 @@ import Axios from 'axios';
 import { API_URL } from "../utils/constants";
 import Loading from "../components/loading";
 import "../assets/css/survey.css";
+import { convertDBBoolToStatus } from "../services/surveyService";
 
 interface ISurveyInitialState {
   chat?: IChatMessage[];
@@ -14,6 +15,7 @@ interface ISurveyInitialState {
   status: SurveyStatus;
   username: string;
   surveyee: string;
+  survey_data: object;
 }
 
 interface IChatMessage {
@@ -71,36 +73,36 @@ const ChatBubble = (props: IChatBubble) => {
 const SurveyChatScreen = (props: ISurveyChatScreenProps) => {
   return (
     <>
-    <section id="survey-chat-wrapper">
-      <ChatBubble author={Author.SYS} index={0} message="Test message One"/>
-      <ChatBubble author={Author.USER} index={1} message="Test message two"/>
-      <ChatBubble author={Author.SYS} index={2} message="Test message three"/>
-      <ChatBubble author={Author.USER} index={3} message="Test message four"/>
-      <ChatBubble author={Author.SYS} index={4} message="Test message five"/>
-      <ChatBubble author={Author.USER} index={5} message="Test message six"/>
-      <ChatBubble author={Author.SYS} index={6} message="Test message seven"/>
-      <ChatBubble author={Author.SYS} index={7} message="Test message One"/>
-      <ChatBubble author={Author.USER} index={8} message="Test message two"/>
-      <ChatBubble author={Author.SYS} index={9} message="Test message three"/>
-      <ChatBubble author={Author.USER} index={10} message="Test message four"/>
-      <ChatBubble author={Author.SYS} index={11} message="Test message five"/>
-      <ChatBubble author={Author.USER} index={12} message="Test message six"/>
-      <ChatBubble author={Author.SYS} index={13} message="Test message seven"/>
-    </section>
-    <section id="survey-chat-input-row">
-      <TextInput
-        id="survey-chat-input-row-input"
-        value={props.state.text}
-        onChange={(event: any) => props.handleTextChange(event)}
-        placeholder="Enter your response here."
-      />
-      <Button
-        appearance="primary"
-        onClick={() => props.handleTextSubmit()}
-      >
-        Send
-      </Button>
-    </section>
+      <section id="survey-chat-wrapper">
+        <ChatBubble author={Author.SYS} index={0} message="Test message One"/>
+        <ChatBubble author={Author.USER} index={1} message="Test message two"/>
+        <ChatBubble author={Author.SYS} index={2} message="Test message three"/>
+        <ChatBubble author={Author.USER} index={3} message="Test message four"/>
+        <ChatBubble author={Author.SYS} index={4} message="Test message five"/>
+        <ChatBubble author={Author.USER} index={5} message="Test message six"/>
+        <ChatBubble author={Author.SYS} index={6} message="Test message seven"/>
+        <ChatBubble author={Author.SYS} index={7} message="Test message One"/>
+        <ChatBubble author={Author.USER} index={8} message="Test message two"/>
+        <ChatBubble author={Author.SYS} index={9} message="Test message three"/>
+        <ChatBubble author={Author.USER} index={10} message="Test message four"/>
+        <ChatBubble author={Author.SYS} index={11} message="Test message five"/>
+        <ChatBubble author={Author.USER} index={12} message="Test message six"/>
+        <ChatBubble author={Author.SYS} index={13} message="Test message seven"/>
+      </section>
+      <section id="survey-chat-input-row">
+        <TextInput
+          id="survey-chat-input-row-input"
+          value={props.state.text}
+          onChange={(event: any) => props.handleTextChange(event)}
+          placeholder="Enter your response here."
+        />
+        <Button
+          appearance="primary"
+          onClick={() => props.handleTextSubmit()}
+        >
+          Send
+        </Button>
+      </section>
     </>
   )
 }
@@ -133,7 +135,8 @@ export default function Survey() {
     text: "",
     status: SurveyStatus.LOADING,
     username: USER,
-    surveyee: SYS
+    surveyee: SYS,
+    survey_data: {}
   };
 
   const [state, setState] = useState(initialState);
@@ -156,9 +159,16 @@ export default function Survey() {
   };
 
   useEffect(() => {   
+    let newState = state
     Axios.get(API_URL + `survey/${param}`)
       .then((res) => {
-        console.log(res)
+        if (res.data[0]) {
+          let data = res.data[0]
+          data.survey_is_active = Boolean(data.survey_is_active)
+          newState.status = convertDBBoolToStatus(data.survey_is_active)
+          console.log(newState)
+          setState(newState)
+        }
       })
       .catch((err) => {
         console.error(err)
