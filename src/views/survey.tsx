@@ -10,7 +10,6 @@ import { convertDBBoolToStatus } from "../services/surveyService";
 
 interface ISurveyInitialState {
   chat?: IChatMessage[];
-  questions: string[];
   text: string;
   status: SurveyStatus;
   username: string;
@@ -131,7 +130,6 @@ export default function Survey() {
   
   const initialState: ISurveyInitialState = {
     chat: [],
-    questions: [],
     text: "",
     status: SurveyStatus.LOADING,
     username: USER,
@@ -159,20 +157,20 @@ export default function Survey() {
   };
 
   useEffect(() => {   
-    let newState = state
+    let newState = {...state}
     Axios.get(API_URL + `survey/${param}`)
       .then((res) => {
-        if (res.data[0]) {
-          let data = res.data[0]
-          data.survey_is_active = Boolean(data.survey_is_active)
-          newState.status = convertDBBoolToStatus(data.survey_is_active)
-          console.log(newState)
+        if (res.data) {
+          const data = res.data
+          newState.status = convertDBBoolToStatus(Boolean(data.survey_is_active))
+          newState.survey_data = data
+          if (data.responses_length === data.questions_length) {
+            newState.status = SurveyStatus.SURVEY_COMPLETE
+          }
           setState(newState)
         }
       })
-      .catch((err) => {
-        console.error(err)
-      })
+      .catch((err) => console.error(err))
   }, []);
 
   const renderView = () => {
@@ -195,3 +193,4 @@ export default function Survey() {
     </SurveyLayout>
   );
 }
+
