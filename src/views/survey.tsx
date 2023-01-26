@@ -14,7 +14,8 @@ interface ISurveyInitialState {
   status: SurveyStatus;
   username: string;
   surveyee: string;
-  survey_data: object;
+  survey_data: ISurveyData;
+  cur_question_id: number;
 }
 
 interface IChatMessage {
@@ -32,6 +33,25 @@ interface ISurveyChatScreenProps {
   handleTextChange: Function;
   handleTextSubmit: Function;
   state: any;     // TODO: Change this to react state datatype
+}
+
+interface ISurveyData {
+  surveyee_id: number;
+  surveyee_path: string;
+  surveyee_mobile: number;
+  surveyee_whatsapp: number;
+  surveyee_email: string;
+  surveyee_name: string;
+  surveyor_user_id: number;
+  surveyor_group_id: number;
+  survey_id: number;
+  survey_name: string;
+  survey_date: any;
+  survey_is_active: boolean;
+  questions: Array<object>;
+  questions_length: number;
+  responses: Array<object>;
+  responses_length: number;
 }
 
 enum Author {
@@ -128,30 +148,48 @@ export default function Survey() {
   const USER: string = "user";
   const SYS: string = "Demo";
   
+  const initialSurveyData: ISurveyData = {
+    surveyee_id: -1,
+    surveyee_path: '',
+    surveyee_mobile: -1,
+    surveyee_whatsapp: -1,
+    surveyee_email: '',
+    surveyee_name: '',
+    surveyor_user_id: -1,
+    surveyor_group_id: -1,
+    survey_id: -1,
+    survey_name: '',
+    survey_date: '',
+    survey_is_active: false,
+    questions: [],
+    questions_length: -1,
+    responses: [],
+    responses_length: -1,
+  }
+
   const initialState: ISurveyInitialState = {
     chat: [],
     text: "",
     status: SurveyStatus.LOADING,
     username: USER,
     surveyee: SYS,
-    survey_data: {}
+    survey_data: initialSurveyData,
+    cur_question_id: 1
   };
 
   const [state, setState] = useState(initialState);
 
   const handleTextChange: ChangeEventHandler<HTMLInputElement> = (e) => setState({ ...state, text: e.target.value });
   const handleTextSubmit = () => {
-    const newChat: IChatMessage = {
-      from: USER,
-      msg: state.text,
-    };
-
-    const newChatLog: IChatMessage[] = state.chat || [];
-    newChatLog.push(newChat);
+    const payload = {
+      survey_id: state.survey_data.survey_id,
+      question_id: state.cur_question_id,
+      surveyee_id: state.survey_data.surveyee_id,
+      response: state.text
+    }
 
     setState({
       ...state,
-      chat: newChatLog,
       text: "",
     });
   };
