@@ -66,6 +66,12 @@ enum SurveyStatus {
   SURVEY_COMPLETE,
 }
 
+enum Questionnaire {
+  PRESENT_QUESTION,
+  WAIT_RESPONSE,
+  SENDING_RESPONSE
+}
+
 const DefaultSystemIcon = () => (<span id="survey-default-avatar">S</span>)
 const DefaultUserIcon = () => (<span id="survey-default-avatar">U</span>)
 
@@ -181,6 +187,7 @@ export default function Survey() {
 
   const handleTextChange: ChangeEventHandler<HTMLInputElement> = (e) => setState({ ...state, text: e.target.value });
   const handleTextSubmit = () => {
+
     const payload = {
       survey_id: state.survey_data.survey_id,
       question_id: state.cur_question_id,
@@ -188,10 +195,19 @@ export default function Survey() {
       response: state.text
     }
 
-    setState({
-      ...state,
-      text: "",
-    });
+    Axios.post(API_URL + `survey/${state.survey_data.survey_id}`, payload)
+      .then((data) => {
+        const newSurveyData: ISurveyData = {...state.survey_data}
+        if (data.status === 200) {
+          newSurveyData.responses = data.data.responses
+          newSurveyData.responses_length = data.data.responses_length
+          setState({
+            ...state,
+            survey_data: newSurveyData,
+            text: "",
+          });
+        }
+      })
   };
 
   useEffect(() => {   

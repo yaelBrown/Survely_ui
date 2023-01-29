@@ -31,6 +31,11 @@
   visibility: hidden;
 }
 
+.survey-panel-transition {
+  visibility: hidden;
+  opacity: 0;
+}
+
 #survey-chat-wrapper {
   height: 605px;
   background: white;
@@ -50,19 +55,6 @@
 #survey-chat-input-row-input {
   width: 350px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #survey-divider {
   height: 0px;
