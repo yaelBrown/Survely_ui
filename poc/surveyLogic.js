@@ -42,3 +42,28 @@ const data = {
   ],
   responses_length: 1,
 };
+
+
+
+
+
+
+const processSurv = () => {
+  const q = data.questions.sort((a,b) => a.question_order - b.question_order)
+  const r = data.responses.sort((a,b) => a.response_question_id - b.response_question_id)
+
+  const chatlog = []
+
+  if (r.length == 0) {
+    chatlog.push({
+      message: q[0].question,
+      author: "sys"
+    })
+  } else {
+    r.forEach((e) => {
+      
+    })
+  }
+
+  return chatlog
+}
